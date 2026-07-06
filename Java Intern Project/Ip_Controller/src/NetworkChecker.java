@@ -15,7 +15,7 @@ public class NetworkChecker{
     }
 
     // Double check (GMP standard)
-    public static boolean gmpVerifyStatus(ServerInfo server){
+    public static boolean gmpVerifyStatus(Server server){
         // First check
         boolean firstCheck= pingPort(server.ipAddress, server.port);
         if(firstCheck){return true;} //Server is working
@@ -23,9 +23,9 @@ public class NetworkChecker{
         System.out.println("[WARNING] First check failed for " + server.serverName + ". Retrying in 5 seconds (GMP Protocol)...");
         //first check failed and we are checking again
 
-        try {
+        try{
             Thread.sleep(5000); //wait for 5 second
-        } catch (InterruptedException e) {//new exception type
+        }catch (InterruptedException e) {//new exception type
             System.out.println("GMP Timer interrupted.");
         }
         return pingPort(server.ipAddress, server.port);//last check
