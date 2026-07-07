@@ -1,0 +1,6 @@
+S1, Cloudflare_Main_Router, 255.255.255.255, 80, NONE
+S2, Google_Backup_Router, bu_domain_kesinlikle_yoktur.com, 80, NONE
+S3, Central_Industrial_Switch, github.com, 80, S1-S2
+S4, Production_Terazi_PLC, microsoft.com, 80, S3
+S5, Packaging_Station_PC, aws.amazon.com, 80, S1
+S6, Isolated_Lab_Device, example.com, 80, NONE
