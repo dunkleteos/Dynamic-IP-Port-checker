@@ -1,4 +1,0 @@
-S1,Primary_Router,127.0.0.1,9999,NONE
-S2,Backup_Router,8.8.8.8,53,NONE
-S3,App_Server_1,127.0.0.1,9999,S1
-S4,Standalone_Device,8.8.8.8,53,NONE
