@@ -311,7 +311,7 @@ public class MonitoringGUI extends JFrame
             }
 
             appendLog("==========================================================\n");
-            appendLog("Cycle Completed. Standing by for 5 seconds...\n");
+            appendLog("Cycle Completed. Standing by for 1 minute...\n");
 
             try {
                 Thread.sleep(60000);//repeat per minute
