@@ -14,48 +14,46 @@ import java.util.Set;
 public class MonitoringGUI extends JFrame
 {
     private JTextArea logArea;
-    private JButton btnStart,btnPauseResume,btnExit;
+    private JButton btnStart, btnPauseResume, btnExit, btnEdit;
 
     // Core state control flags
     private volatile boolean isStarted = false;
     private volatile boolean isRunning = false;
-    private volatile boolean isPaused= false;
+    private volatile boolean isPaused = false;
     private Thread monitoringThread;
 
     // High-Contrast Color Palette
-    private final Color bgDark= new Color(24,24,27);
-    private final Color panelDark = new Color(39,39, 42);
-    private final Color terminalBlack= new Color(9,9, 11);
-    private final Color textNeonGreen= new Color(74,222,128);
+    private final Color bgDark = new Color(24, 24, 27);
+    private final Color panelDark = new Color(39, 39, 42);
+    private final Color terminalBlack = new Color(9, 9, 11);
+    private final Color textNeonGreen = new Color(74, 222, 128);
 
     // Button Colors (Guaranteed Readability)
-    private final Color colorGreen = new Color(34,197,94);   // Start Active
-    private final Color colorOrange= new Color(245, 158,11); // Pause
-    private final Color colorCyan = new Color(6, 182, 212);    // Resume
-    private final Color colorRed =new Color(220,38, 38);     // Exit
-    private final Color colorMuted= new Color(45, 45,50);    // Disabled/Running state
-
+    private final Color colorGreen = new Color(34, 197, 94);   // Start Active
+    private final Color colorOrange = new Color(245, 158, 11); // Pause
+    private final Color colorCyan = new Color(6, 182, 212);    // Resume / Save
+    private final Color colorRed = new Color(220, 38, 38);     // Exit
+    private final Color colorMuted = new Color(45, 45, 50);    // Disabled/Running state
 
     public MonitoringGUI(){
-
         setTitle("Sanofi (Fareva) Lüleburgaz | Enterprise Network Monitor");
-        setSize(900,650);
+        setSize(900, 650);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
 
         // 1. Header Area
-        JPanel headerPanel= new JPanel(new BorderLayout());
+        JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(bgDark);
-        headerPanel.setBorder(new EmptyBorder(15,20,15, 20));
+        headerPanel.setBorder(new EmptyBorder(15, 20, 15, 20));
 
-        JLabel titleLabel= new JLabel("SANOFI (FAREVA) NETWORK AUDIT CONTROL CENTER");
-        titleLabel.setFont(new Font("Segoe UI",Font.BOLD,18));
+        JLabel titleLabel = new JLabel("SANOFI (FAREVA) NETWORK AUDIT CONTROL CENTER");
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
         titleLabel.setForeground(Color.WHITE);
         headerPanel.add(titleLabel, BorderLayout.WEST);
 
-        JLabel locLabel= new JLabel("Lüleburgaz Plant - Production OT Network");
-        locLabel.setFont(new Font("Segoe UI",Font.ITALIC,13));
+        JLabel locLabel = new JLabel("Lüleburgaz Plant - Production OT Network");
+        locLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
         locLabel.setForeground(Color.GRAY);
         headerPanel.add(locLabel, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
@@ -64,7 +62,7 @@ public class MonitoringGUI extends JFrame
         logArea = new JTextArea();
         logArea.setBackground(terminalBlack);
         logArea.setForeground(textNeonGreen);
-        logArea.setFont(new Font("Consolas",Font.PLAIN,13));
+        logArea.setFont(new Font("Consolas", Font.PLAIN, 13));
         logArea.setEditable(false);
         logArea.setBorder(new EmptyBorder(12, 12, 12, 12));
 
@@ -73,18 +71,20 @@ public class MonitoringGUI extends JFrame
         add(scrollPane, BorderLayout.CENTER);
 
         // 3. Control Toolbar
-        JPanel controlPanel=new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
+        JPanel controlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
         controlPanel.setBackground(bgDark);
 
-        // Initializing Buttons with Contrast
+        // Initializing Buttons
         btnStart = createStyledButton("START MONITORING", colorGreen, Color.WHITE);
-        btnPauseResume = createStyledButton("PAUSE SYSTEM", colorMuted, new Color(130, 130, 135)); // Faded text initially
+        btnPauseResume = createStyledButton("PAUSE SYSTEM", colorMuted, new Color(130, 130, 135));
+        btnEdit = createStyledButton("EDIT SERVERS", colorMuted, Color.WHITE);
         btnExit = createStyledButton("EXIT SIMULATION", colorRed, Color.WHITE);
 
         controlPanel.add(btnStart);
         controlPanel.add(btnPauseResume);
+        controlPanel.add(btnEdit);
         controlPanel.add(btnExit);
-        add(controlPanel,BorderLayout.SOUTH);
+        add(controlPanel, BorderLayout.SOUTH);
 
         // 4. Dynamic Button Event Listeners
 
@@ -94,17 +94,15 @@ public class MonitoringGUI extends JFrame
             if (isStarted){
                 return;
             }
-            isStarted=true;
-            isRunning=true;
-            isPaused=false;
+            isStarted = true;
+            isRunning = true;
+            isPaused = false;
             logArea.setText(""); // Fresh clear logs
 
-            // Update Start Button -> Looks locked but text is clear
             btnStart.setText("SYSTEM RUNNING...");
             btnStart.setBackground(colorMuted);
             btnStart.setForeground(new Color(150, 150, 155));
 
-            // Update Pause Button -> Vibrant Orange with BLACK text for perfect contrast
             btnPauseResume.setText("PAUSE");
             btnPauseResume.setBackground(colorOrange);
             btnPauseResume.setForeground(Color.BLACK);
@@ -119,18 +117,27 @@ public class MonitoringGUI extends JFrame
 
             if (!isPaused) {
                 isPaused = true;
-                // Switch to RESUME mode: Cyan background with BLACK text
                 btnPauseResume.setText("RESUME");
                 btnPauseResume.setBackground(colorCyan);
                 btnPauseResume.setForeground(Color.BLACK);
                 appendLog("\n[SYSTEM CONTROL] ⏸️ Audit cycle PAUSED by administrator.");
             } else {
                 isPaused = false;
-                // Switch back to PAUSE mode: Orange background with BLACK text
                 btnPauseResume.setText("PAUSE");
                 btnPauseResume.setBackground(colorOrange);
                 btnPauseResume.setForeground(Color.BLACK);
                 appendLog("[SYSTEM CONTROL] ▶️ Audit cycle RESUMED successfully.\n");
+            }
+        });
+
+        // EDIT BUTTON
+        btnEdit.addActionListener(e -> {
+            if (isStarted && !isPaused) {
+                JOptionPane.showMessageDialog(this,
+                        "Please pause or stop the system before editing the server configuration!",
+                        "System Warning", JOptionPane.WARNING_MESSAGE);
+            } else {
+                openEditor();
             }
         });
 
@@ -140,18 +147,63 @@ public class MonitoringGUI extends JFrame
         });
     }
 
-    // Advanced Renderer for Flat UI Buttons with absolute color control
+    // Server Configuration Editor Window
+    private void openEditor() {
+        JDialog editorDialog = new JDialog(this, "Edit Server Configuration (servers.txt)", true);
+        editorDialog.setSize(650, 450);
+        editorDialog.setLayout(new BorderLayout());
+
+        JTextArea editArea = new JTextArea();
+        editArea.setBackground(terminalBlack);
+        editArea.setForeground(textNeonGreen);
+        editArea.setCaretColor(Color.WHITE);
+        editArea.setFont(new Font("Consolas", Font.PLAIN, 14));
+        editArea.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Read file content
+        try {
+            String content = new String(Files.readAllBytes(Paths.get("servers.txt")));
+            editArea.setText(content);
+        } catch (IOException e) {
+            editArea.setText("// [ERROR] 'servers.txt' file not found!\n// Please make sure the file exists in the project root directory.");
+        }
+
+        JScrollPane scrollPane = new JScrollPane(editArea);
+        scrollPane.setBorder(BorderFactory.createLineBorder(panelDark, 2));
+        editorDialog.add(scrollPane, BorderLayout.CENTER);
+
+        // Save Button
+        JButton btnSave = createStyledButton("SAVE & APPLY", colorCyan, Color.BLACK);
+        btnSave.addActionListener(e -> {
+            try {
+                Files.write(Paths.get("servers.txt"), editArea.getText().getBytes());
+                JOptionPane.showMessageDialog(editorDialog,
+                        "Configuration saved successfully! The system will reload this list on the next audit cycle.",
+                        "Success", JOptionPane.INFORMATION_MESSAGE);
+                editorDialog.dispose();
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(editorDialog, "An error occurred while saving the file!", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        });
+
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setBackground(bgDark);
+        bottomPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
+        bottomPanel.add(btnSave);
+        editorDialog.add(bottomPanel, BorderLayout.SOUTH);
+
+        editorDialog.setLocationRelativeTo(this);
+        editorDialog.setVisible(true);
+    }
+
     private JButton createStyledButton(String text, Color bgColor, Color fgColor) {
         JButton btn = new JButton(text);
         btn.setFont(new Font("Segoe UI", Font.BOLD, 13));
         btn.setBackground(bgColor);
         btn.setForeground(fgColor);
-
-        // These 3 lines force Swing to use OUR colors and completely bypass OS themes
         btn.setOpaque(true);
         btn.setContentAreaFilled(true);
         btn.setBorder(BorderFactory.createLineBorder(bgColor.darker(), 1));
-
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         return btn;
@@ -164,12 +216,10 @@ public class MonitoringGUI extends JFrame
         });
     }
 
-    // Core Monitoring Architecture
     private void startMonitoringLogic() {
         appendLog("=== SANOFI(FAREVA) AUTOMATED SERVER MONITORING SYSTEM INITIALIZING ===");
 
-        String filePath = "C:\\Users\\ozgur\\Desktop\\java deneme\\Java Intern Project\\Ip_Controller\\src\\servers.txt";
-        //File location part should change on different devices
+        String filePath = "servers.txt";
         List<Server> serverList = new ArrayList<>();
 
         try {
@@ -191,7 +241,7 @@ public class MonitoringGUI extends JFrame
                 }
             }
         } catch (IOException e) {
-            appendLog("[CRITICAL ERROR] Infrastructure configuration file could not be read!");
+            appendLog("[CRITICAL ERROR] Infrastructure configuration file could not be read! Check path: " + Paths.get(filePath).toAbsolutePath());
             return;
         }
 
@@ -228,7 +278,6 @@ public class MonitoringGUI extends JFrame
         serverList = polymorphicServerList;
         appendLog("======================================================================\n");
 
-        // Continuous Processing Loop
         while (isRunning){
             if (isPaused){
                 try{
@@ -252,7 +301,6 @@ public class MonitoringGUI extends JFrame
             for (Server server : serverList){
                 if (!isRunning || isPaused) break;
 
-                // REDUNDANCY CHECK
                 if (server.hasParents()) {
                     boolean allParentsFailed = true;
                     for (String pId : server.parentIds) {
@@ -273,7 +321,6 @@ public class MonitoringGUI extends JFrame
                     }
                 }
 
-                // NETWORK AUDIT
                 boolean isUp = NetworkChecker.gmpVerifyStatus(server);
 
                 if (isUp){
@@ -314,7 +361,7 @@ public class MonitoringGUI extends JFrame
             appendLog("Cycle Completed. Standing by for 1 minute...\n");
 
             try {
-                Thread.sleep(60000);//repeat per minute
+                Thread.sleep(60000);
             } catch (InterruptedException e) {
                 break;
             }
