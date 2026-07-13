@@ -5,6 +5,8 @@ An enterprise-grade, industrial network monitoring control center that dynamical
 Moving away from static console logs, this version features a custom high-contrast **Industrial Dark Mode GUI** powered by a zero-lag multi-threaded architecture. The application automatically analyzes server dependencies at runtime, builds a dynamic network topology, prevents false-alarm cascading failures, and provides real-time infrastructure alerts.
 
 ---
+<img width="1122" height="825" alt="image" src="https://github.com/user-attachments/assets/f13347fe-7c40-41e1-94d2-ee2d8f9d3faf" />
+
 
 ## ✨ Key Features
 
