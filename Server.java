@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class Server {
+public class Server{
     public String id;
     public String serverName;
     public String ipAddress;
