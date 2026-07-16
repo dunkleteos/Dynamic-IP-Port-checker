@@ -7,7 +7,6 @@ Moving away from static console logs, this version features a custom high-contra
 ---
 <img width="1122" height="825" alt="image" src="https://github.com/user-attachments/assets/f13347fe-7c40-41e1-94d2-ee2d8f9d3faf" />
 
-
 ## ✨ Key Features
 
 * 🎨 **Industrial Dark Mode GUI:** High-contrast, custom-rendered user interface designed for 24/7 production environments (bypasses default OS theme restrictions for perfect color consistency).
